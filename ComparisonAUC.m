@@ -1,8 +1,8 @@
 % clc;
 % clf;
 % clear;
-filepath="C:\Users\alexh\OneDrive\Documents\data for research\day 3 YFP\";
-filepath2="C:\Users\alexh\OneDrive\Documents\data for research\day 3 hm4di\";
+filepath="C:\Users\pderd\Code\FiberPhotometryAUC\kevintest\auc1\";
+filepath2="C:\Users\pderd\Code\FiberPhotometryAUC\kevintest\auc2\";
 %filepath3="C:\Users\alexh\OneDrive\Documents\data for research\day 17 ch1 hm4di\";
 %filepath4="C:\Users\alexh\OneDrive\Documents\data for research\day 17 ch2 hm4di\";
 filename = dir(filepath+"*.mat"); %read the files into matlab
@@ -39,7 +39,7 @@ save('computeavg2')
 %save('computeavg4')
 figure
 %boxchart([averages,averages2,averages3,averages4])
-boxchart([averages,averages2])
+boxchart([1, 2],[averages,averages2])
 set(gca,'XTickLabel',{"day 3 YFP", "day 3 hm4di"})
 %set(gca,'XTickLabel',{"day 17 CH1 YFP", "day 17 CH2 YFP","day 17 CH1 hm4di","day 17 CH1 hm4di"});
 [h,p,ci,stats] = ttest2(averages,averages2) 
