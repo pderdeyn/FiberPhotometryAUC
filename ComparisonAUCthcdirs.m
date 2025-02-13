@@ -13,17 +13,31 @@ numpeaks1 = [];
 numpeaks2 = [];
 numpeaks3 = [];
 threshes = [];
-tstarts1 = [7 8 7 9; 
+%'THCtoNicCohortOne(onethird)'
+%'THCtoNicCohortTwo'
+%'VehicletoNicCohorTwo'
+%'VehtoNicCohortOne(onethird)'
+tstarts1 = [6 7 6 6; 
     5 5 5 5; 
-    8 5 5 5;
-    %10 na 9 na;
-    8 7 6 7];
-tstarts2 = [39 40 38 39; 
-    36 36 36 36; 
-    36 36 36 36;
-    %41 na 40 na;
-    41 39 37 38];
-
+    6.6 5 6 4;
+    6 6 5 6];
+%tends1 = [
+%    27    28    27    29
+%    25    25    25    25
+%    28    25    25    25
+%    28    27    26    27
+%];
+tstarts2 = [38 39 36.67 38; 
+    35 36 35 35; 
+    35 35 35 35;
+    40 38 37 37];
+tends2 = [
+    60 60 55 55
+    59 nan nan 59
+    63 60 nan 50
+    57 58 63 55
+];
+tends1 = tstarts1+25;
 
 idelta = 0;
 for i = 1:length(groupdirs)
@@ -45,7 +59,6 @@ for i = 1:length(groupdirs)
         exps(i-idelta,j-jdelta) = string(expdirs(j).name);
         exppath = grouppath + "\" + expdirs(j).name;
         count = count + 1;
-        savefigs=false;
         %if contains(groups(i-idelta),"Veh") && contains(exps(i-idelta,j-jdelta),"M10")
         %    savefigs=true;
         %else
@@ -54,14 +67,44 @@ for i = 1:length(groupdirs)
         %end
 
         mat_files = dir(exppath+"\*.mat");
+
+        A = load(exppath+"\"+mat_files(1+mat_delta).name);
+        x = A.sig_405_RS;
+        y = A.timeFP_RS;
+        %y = y / 60;
+        z = A.sig_472_RS;
+
+        f = figure;
+        pControl = plot(y,x,'black');
+        hold on
+        pGCAMP = plot(y,z,'b');
+        grid on
+        xlabel('time'); 
+        ylabel('signal');
+        grid on;
+        title(mat_files(1+mat_delta).name,'interpreter','none');
+        xline([y(round(tstarts1(i-idelta,j-jdelta)*60*100)),y(round(tends1(i-idelta,j-jdelta)*60*100))],'-',{'tstart1','tend1'})
+        if isnan(tends2(i-idelta,j-jdelta))
+            xstop = y(end);
+        else
+            xstop = y(round(tends2(i-idelta,j-jdelta)*60*100));
+        end
+        xline([y(round(tstarts2(i-idelta,j-jdelta)*60*100)),xstop],'-',{'tstart2','tend2'})
+        legend([pControl pGCAMP],{'Control','GCAMP'},'location','southeast')
+
+        savename = groups(i-idelta)+"."+exps(i-idelta,j-jdelta);
+
+        saveas(f,"plots\"+savename+".png")
+        saveas(f,"plots\"+savename+".fig")
+        
         thresh=0;
         %[peaks1,avg1] = plotAUC(exppath+"\channel_1\"+mat_files(1+mat_delta).name,true);
         %averages1(i-idelta,j-jdelta)=avg1;
         %numpeaks1(i-idelta,j-jdelta)=peaks1;
-        [peaks2,avg2,thresh] = plotAUC(exppath+"\"+mat_files(1+mat_delta).name,savefigs,tstarts1(i-idelta,j-jdelta)*60*100,(tstarts1(i-idelta,j-jdelta)+20)*60*100);
+        [peaks2,avg2,thresh] = plotAUC(exppath+"\"+mat_files(1+mat_delta).name,savename+".first",tstarts1(i-idelta,j-jdelta)*60*100,(tends1(i-idelta,j-jdelta))*60*100);
         averages2(i-idelta,j-jdelta)=avg2;
         numpeaks2(i-idelta,j-jdelta)=peaks2;
-        [peaks3,avg3,thresh] = plotAUC(exppath+"\"+mat_files(1+mat_delta).name,savefigs,tstarts2(i-idelta,j-jdelta)*60*100,(tstarts2(i-idelta,j-jdelta)+20)*60*100,thresh);
+        [peaks3,avg3,thresh] = plotAUC(exppath+"\"+mat_files(1+mat_delta).name,savename+".second",tstarts2(i-idelta,j-jdelta)*60*100,(tends2(i-idelta,j-jdelta))*60*100);
         averages3(i-idelta,j-jdelta)=avg3;
         numpeaks3(i-idelta,j-jdelta)=peaks3;
         
@@ -82,30 +125,38 @@ csvwrite('thc.peaks-second.csv',numpeaks3)
 % bar(averages1)
 % set(gca,'XTickLabel',groups)
 
-figure
+f=figure;
 
-bar(averages2)
+b = bar(averages2);
 set(gca,'XTickLabel',groups)
+title('aucs first')
+saveas(f,"plots\first.aucs.png")
 
-figure
+f=figure;
 
 bar(averages3)
 set(gca,'XTickLabel',groups)
+title('aucs second')
+saveas(f,"plots\second.aucs.png")
 
 % figure
 % 
 % bar(numpeaks1)
 % set(gca,'XTickLabel',groups)
 
-figure
+f=figure;
 
 bar(numpeaks2)
 set(gca,'XTickLabel',groups)
+title('peaks first')
+saveas(f,"plots\first.peaks.png")
 
-figure
+f=figure;
 
 bar(numpeaks3)
 set(gca,'XTickLabel',groups)
+title('peaks second')
+saveas(f,"plots\second.peaks.png")
 
 % [h,p,ci,stats] = ttest2(averages,averages2) 
 % if p<0.01

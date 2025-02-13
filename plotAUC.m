@@ -1,10 +1,11 @@
-function [num_peaks,avg,thresh] = plotAUC(filename,figs,tstart,tend,thresh)
+function [num_peaks,avg,thresh] = plotAUC(filename,savename,tstart,tend,thresh,aucschematic)
     arguments
        filename
-       figs
+       savename = 0
        tstart (1,1) double = 1 
        tend (1,1) double = 0 
        thresh (1,1) double = 0 
+       aucschematic = 0
     end
 %filepath="C:\Users\alexh\OneDrive\Documents\data for research";
 %filename=uigetfile('*','Select file');
@@ -15,7 +16,12 @@ if tend==0
     y = A.timeFP_RS(50:end);
     z = A.sig_472_RS(50:end);
     zmin = movmin(z,100);
-else 
+elseif isnan(tend)
+    x = A.sig_405_RS(tstart:end);
+    y = A.timeFP_RS(tstart:end);
+    z = A.sig_472_RS(tstart:end);
+    zmin = z - movmin(z,100);
+else
     x = A.sig_405_RS(tstart:tend);
     y = A.timeFP_RS(tstart:tend);
     z = A.sig_472_RS(tstart:tend);
@@ -23,17 +29,22 @@ else
 end
 %CalcNorm = z-zmin;
 %CalcNorm = z-min(z);
-CalcNorm = z-mean(z(1:100*100))+2*std(z(1:100*100));
+%CalcNorm = z-mean(z(1:100*100))+4*std(z(1:100*100));
+%AUCBaseline = mean(z(1:100*100))-4*std(z(1:100*100));
+CalcNorm = z-median(z(1:100*100));
+AUCBaseline = median(z(1:100*100));
 
-figure
+
+f=figure
 pControl = plot(y,x,'black');
 hold on
 pGCAMP = plot(y,z,'b');
+pAUCBase = yline(AUCBaseline,'-','auc baseline');
 grid on
 pNormal = plot(y,zmin);
 xlabel('time'); 
 ylabel('signal');
-legend([pControl pGCAMP pNormal],{'Control','GCAMP','moving min'})
+%legend([pControl pGCAMP pNormal pAUCBase],{'Control','GCAMP','moving min' 'AUC baseline'})
 grid on;
 title('signal vs time:'+filename);
 % 
@@ -52,11 +63,13 @@ findpeaks(zmin,y,'MinPeakHeight',thresh);
 pks = findpeaks(zmin,y,'MinPeakHeight',thresh);
 num_peaks = length(pks);
 
-
+if isstring(savename)
+    saveas(f,"plots/"+savename+".peaks.png");
+end
 
 
 avg = AreaNorm;
-if figs
+if aucschematic
     figure
     x=y;
     curve1 = CalcNorm';
@@ -70,8 +83,8 @@ if figs
     ylabel('signal');
     ylim([min(CalcNorm), max(CalcNorm)])
     title('signal vs time:'+filename);
-else
-    close all
+%else
+%    close all
 end
 end
 
