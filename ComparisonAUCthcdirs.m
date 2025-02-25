@@ -59,7 +59,7 @@ for i = 1:length(groupdirs)
         exps(i-idelta,j-jdelta) = string(expdirs(j).name);
         exppath = grouppath + "\" + expdirs(j).name;
         count = count + 1;
-        %if contains(groups(i-idelta),"Veh") && contains(exps(i-idelta,j-jdelta),"M10")
+        %if contains(groups(i-idelta),"THC") && contains(exps(i-idelta,j-jdelta),"M5")
         %    savefigs=true;
         %else
         %    savefigs=false;
