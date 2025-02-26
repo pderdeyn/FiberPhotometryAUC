@@ -59,8 +59,8 @@ AreaNorm=trapz(y,CalcNorm);
 if thresh==0
     thresh = mean(zmin)+5*std(zmin);
 end
-findpeaks(zmin,y,'MinPeakHeight',thresh,'MinPeakDistance',50);
-pks = findpeaks(zmin,y,'MinPeakHeight',thresh,'MinPeakDistance',50);
+findpeaks(zmin,y,'MinPeakHeight',thresh,'MinPeakDistance',25);
+pks = findpeaks(zmin,y,'MinPeakHeight',thresh,'MinPeakDistance',25);
 num_peaks = length(pks);
 
 if isstring(savename)
