@@ -1,14 +1,13 @@
-function [num_peaks,avg,thresh] = plotAUC(filename,savename,tstart,tend,thresh,aucschematic)
+function [num_peaks,avg,thresh] = plotAUC(filename,savename,tstart,tend,pseudonym,thresh,aucschematic)
     arguments
        filename
        savename = 0
        tstart (1,1) double = 1 
        tend (1,1) double = 0 
+       pseudonym = 0
        thresh (1,1) double = 0 
        aucschematic = 0
     end
-%filepath="C:\Users\alexh\OneDrive\Documents\data for research";
-%filename=uigetfile('*','Select file');
 
 A = load(filename);
 if tend==0 
@@ -27,6 +26,12 @@ else
     z = A.sig_472_RS(tstart:tend);
     zmin = z - movmin(z,100);
 end
+
+
+if isstring(pseudonym)
+    y=y-y(1);
+end
+
 %CalcNorm = z-zmin;
 %CalcNorm = z-min(z);
 %CalcNorm = z-mean(z(1:100*100))+4*std(z(1:100*100));
@@ -65,6 +70,10 @@ num_peaks = length(pks);
 
 if isstring(savename)
     saveas(f,"plots/"+savename+".peaks.png");
+end
+if isstring(pseudonym)
+    title(pseudonym);
+    saveas(f,"plots_pseudonyms/"+pseudonym+".png");
 end
 
 

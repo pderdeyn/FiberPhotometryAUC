@@ -17,10 +17,10 @@ threshes = [];
 %'THCtoNicCohortTwo'
 %'VehicletoNicCohorTwo'
 %'VehtoNicCohortOne(onethird)'
-tstarts1 = [5 5 5 5 5 
-    5 5 5 5 5; 
-    5 5 5 5 5
-    5 5 5 5 5];
+tstarts1 = [
+    5 5 5 5 5 5 5 5 5 5; 
+    5 5 5 5 5 5 5 5 5 5
+    ];
 %tends1 = [
 %    27    28    27    29
 %    25    25    25    25
@@ -29,15 +29,15 @@ tstarts1 = [5 5 5 5 5
 %];
 tends1 = tstarts1+25;
 
-tstarts2 = [35 35 35 35 35 
-    35 35 35 35 35; 
-    35 35 35 35 35 
-    35 35 35 35 35];
+tstarts2 = [
+    35 35 35 35 35 35 35 35 35 35; 
+    35 35 35 35 35 35 35 35 35 35
+    ];
 tends2 = tstarts2+25;
 
 
-pseudonyms = string(dec2hex(randi([1 10000], 2,16)));
-pseudonyms = reshape(pseudonyms,4,4,2);
+pseudonyms = string(dec2hex(randi([1 10000], 2,20)));
+pseudonyms = reshape(pseudonyms,2,10,2);
 
 times1 = [];
 times2 = [];
@@ -71,7 +71,6 @@ for i = 1:length(groupdirs)
             y = A.timeFP_RS;
             times2(i-idelta,j-jdelta) = y(end)/60-tstarts2(i-idelta,j-jdelta);
         end
-        continue
         %if contains(groups(i-idelta),"THC") && contains(exps(i-idelta,j-jdelta),"M5")
         %    savefigs=true;
         %else
@@ -116,11 +115,13 @@ for i = 1:length(groupdirs)
         %numpeaks1(i-idelta,j-jdelta)=peaks1;
         pseudo = pseudonyms(i-idelta,j-jdelta,1);
         pseudo = string(pseudo{1});
+        pseudo = 0;
         [peaks2,avg2,thresh] = plotAUC(exppath+"\"+mat_files(1+mat_delta).name,savename+".first",tstarts1(i-idelta,j-jdelta)*60*100,(tends1(i-idelta,j-jdelta))*60*100,pseudo);
         averages2(i-idelta,j-jdelta)=avg2;
         numpeaks2(i-idelta,j-jdelta)=peaks2;
         pseudo = pseudonyms(i-idelta,j-jdelta,2);
         pseudo = string(pseudo{1});
+        pseudo = 0;
         [peaks3,avg3,thresh] = plotAUC(exppath+"\"+mat_files(1+mat_delta).name,savename+".second",tstarts2(i-idelta,j-jdelta)*60*100,(tends2(i-idelta,j-jdelta))*60*100,pseudo);
         averages3(i-idelta,j-jdelta)=avg3;
         numpeaks3(i-idelta,j-jdelta)=peaks3;
@@ -131,17 +132,17 @@ end
 
 
 %csvwrite('Nic.auc-whole.csv',averages1)
-csvwrite('thc.auc-first.csv',averages2)
-csvwrite('thc.auc-second.csv',averages3)
+csvwrite('thc-nacmed.auc-first.csv',averages2)
+csvwrite('thc-nacmed.auc-second.csv',averages3)
 %csvwrite('Nic.peaks-whole.csv',numpeaks1)
-csvwrite('thc.peaks-first.csv',numpeaks2)
-csvwrite('thc.peaks-second.csv',numpeaks3)
+csvwrite('thc-nacmed.peaks-first.csv',numpeaks2)
+csvwrite('thc-nacmed.peaks-second.csv',numpeaks3)
 
 
-writetable(table(pseudonyms(:,:,1)),'thc.pseudonyms.first.csv')
-writetable(table(pseudonyms(:,:,2)),'thc.pseudonyms.second.csv')
-writetable(table(exps),'thc.experiments.csv')
-writetable(table(times2),'thc.times.csv')
+writetable(table(pseudonyms(:,:,1)),'thc-nacmed.pseudonyms.first.csv')
+writetable(table(pseudonyms(:,:,2)),'thc-nacmed.pseudonyms.second.csv')
+writetable(table(exps),'thc-nacmed.experiments.csv')
+writetable(table(times2),'thc-nacmed.times.csv')
 
 
 
