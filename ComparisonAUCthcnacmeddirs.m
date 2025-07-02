@@ -18,22 +18,23 @@ threshes = [];
 %'VehicletoNicCohorTwo'
 %'VehtoNicCohortOne(onethird)'
 tstarts1 = [
-    5 5 5 5 5 5 5 5 5 5; 
-    5 5 5 5 5 5 5 5 5 5
+    nan 4 4.5 5 5 6 6 5 4.5 5; 
+    4.5 4.5 5 5 5 5.5 5 4.75 5 4.5
     ];
-%tends1 = [
-%    27    28    27    29
-%    25    25    25    25
-%    28    25    25    25
-%    28    27    26    27
-%];
-tends1 = tstarts1+25;
+tends1 = [
+    nan 36 36 35 36 38 37 38 36 29; 
+    38 35.5 34.8 36 36 36.5 34 36 35 36
+    ];
+%tends1 = tstarts1+25;
 
 tstarts2 = [
-    35 35 35 35 35 35 35 35 35 35; 
-    35 35 35 35 35 35 35 35 35 35
+    45.5 nan 36 35 36 38 37 38 36 39; 
+    38 35.5 37.5 36 35 36.5 34 36.6 35 36
     ];
-tends2 = tstarts2+25;
+tends2 = [
+    60 nan nan nan nan 63 63 nan 55 nan; 
+    56 nan 66.5 63 nan 59 64.4 nan 55 56
+    ];
 
 
 pseudonyms = string(dec2hex(randi([1 10000], 2,20)));
@@ -95,13 +96,19 @@ for i = 1:length(groupdirs)
         ylabel('signal');
         grid on;
         title(mat_files(1+mat_delta).name,'interpreter','none');
-        xline([y(round(tstarts1(i-idelta,j-jdelta)*60*100)),y(round(tends1(i-idelta,j-jdelta)*60*100))],'-',{'tstart1','tend1'})
-        if isnan(tends2(i-idelta,j-jdelta))
-            xstop = y(end);
-        else
-            xstop = y(round(tends2(i-idelta,j-jdelta)*60*100));
+        if ~isnan(tstarts1(i-idelta,j-jdelta))
+            xline([y(round(tstarts1(i-idelta,j-jdelta)*60*100)),y(round(tends1(i-idelta,j-jdelta)*60*100))],'-',{'tstart1','tend1'})
         end
-        xline([y(round(tstarts2(i-idelta,j-jdelta)*60*100)),xstop],'-',{'tstart2','tend2'})
+
+        if ~isnan(tstarts2(i-idelta,j-jdelta))
+            if isnan(tends2(i-idelta,j-jdelta))
+                xstop = y(end);
+            else
+                xstop = y(round(tends2(i-idelta,j-jdelta)*60*100));
+            end
+            xline([y(round(tstarts2(i-idelta,j-jdelta)*60*100)),xstop],'-',{'tstart2','tend2'})
+        end
+
         legend([pControl pGCAMP],{'Control','GCAMP'},'location','southeast')
 
         savename = groups(i-idelta)+"."+exps(i-idelta,j-jdelta);

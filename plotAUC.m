@@ -15,6 +15,11 @@ if tend==0
     y = A.timeFP_RS(50:end);
     z = A.sig_472_RS(50:end);
     zmin = movmin(z,100);
+elseif isnan(tstart)
+    num_peaks=nan;
+    avg = nan;
+    thresh = nan;
+    return
 elseif isnan(tend)
     x = A.sig_405_RS(tstart:end);
     y = A.timeFP_RS(tstart:end);
